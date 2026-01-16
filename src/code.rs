@@ -12,6 +12,7 @@ pub enum Code {
     Eq { dst: usize, x: usize, y: usize },
     Ne { dst: usize, x: usize, y: usize },
     Sqrt { dst: usize, x: usize },
+    Exp { dst: usize, x: usize },
 }
 
 impl Code {
@@ -28,6 +29,7 @@ impl Code {
             Code::Eq { dst, x, y } => mem[*dst] = Float::with_val(prec, if mem[*x] == mem[*y] { 1 } else { 0 }),
             Code::Ne { dst, x, y } => mem[*dst] = Float::with_val(prec, if mem[*x] != mem[*y] { 1 } else { 0 }),
             Code::Sqrt { dst, x } => mem[*dst] = Float::with_val(prec, mem[*x].sqrt_ref()),
+            Code::Exp { dst, x } => mem[*dst] = Float::with_val(prec, mem[*x].exp_ref()),
         }
     }
 }
