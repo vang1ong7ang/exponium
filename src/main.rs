@@ -26,22 +26,22 @@ fn main() -> Result<()> {
     let mut out = stdout();
     out.execute(EnterAlternateScreen)?;
     out.execute(Hide)?;
-    let mut speed = Float::with_val(prec, 1.0);
-    let mut waiting = Float::with_val(prec, 0.0);
+    let mut freq = Float::with_val(prec, 1.0);
+    let mut step = Float::with_val(prec, 0.0);
     loop {
         if poll(Duration::from_millis(10))? {
             if let Event::Key(key) = read()? {
                 if key.kind == KeyEventKind::Press {
                     match key.code {
                         KeyCode::Up => {
-                            speed *= 2.0;
+                            freq *= 2.0;
                         }
                         KeyCode::Down => {
-                            speed /= 2.0;
+                            freq /= 2.0;
                         }
                         KeyCode::Enter => {
-                            game.harvest(waiting.clone());
-                            waiting = Float::with_val(prec, 0.0);
+                            game.harv(step.clone());
+                            step = Float::with_val(prec, 0.0);
                         }
                         KeyCode::Esc => {
                             out.execute(Show)?;
@@ -53,20 +53,14 @@ fn main() -> Result<()> {
                 }
             }
         }
-        waiting += &speed;
-        out.execute(MoveTo(0, 0))?;
-        writeln!(out, "Last Harvest Time: {}", game.time())?;
-        out.execute(MoveTo(0, 1))?;
-        writeln!(out, "Time Since Last Harvest: {}", waiting)?;
-        out.execute(MoveTo(0, 2))?;
-        writeln!(out, "Principal: {}", game.prin())?;
-        out.execute(MoveTo(0, 3))?;
-        writeln!(out, "Unrealized Gain: {}", game.gain(waiting.clone()))?;
-        out.execute(MoveTo(0, 4))?;
-        writeln!(out, "Nominal Interest Rate: {}", game.rate())?;
-        out.execute(MoveTo(0, 5))?;
-        writeln!(out, "Harvest Cost: {}", game.cost())?;
-        out.execute(MoveTo(0, 6))?;
-        writeln!(out, "<Enter>: Harvest; <Esc>: Exit; <Up>: Increase Speed; <Down>: Decrease Speed")?;
+        step += &freq;
+        let head = ["TIME", "TOTL", "STEP", "EARN", "PREV", "PRIN", "RATE", "COST", "FREQ"];
+        let data = [game.time().clone(), game.gain(step.clone()) + game.prin(), step.clone(), game.gain(step.clone()), game.time().clone(), game.prin().clone(), game.rate().clone(), game.cost().clone(), freq.clone()];
+        for i in 0..head.len() {
+            out.execute(MoveTo(0, i as u16))?;
+            writeln!(out, "{}: {}", head[i], data[i])?;
+        }
+        out.execute(MoveTo(0, head.len() as u16))?;
+        writeln!(out, "\r\n<Enter>: Harvest\r\n<Esc>: Exit\r\n<Up>: Speed +\r\n<Down>: Speed -")?;
     }
 }

@@ -1,4 +1,7 @@
+use crate::Tact;
 use rug::Float;
+use std::iter::from_fn;
+use std::iter::once;
 pub struct Game {
     rate: Float,
     cost: Float,
@@ -13,7 +16,13 @@ impl Game {
         let time = Float::with_val(prec, 0);
         Game { rate, cost, prin, time }
     }
-    pub fn harvest(&mut self, wait: Float) {
+    pub fn tact(mut self, tact: Tact) -> impl Iterator<Item = (Float, Float)> {
+        once((self.time.clone(), self.prin.clone())).chain(from_fn(move || {
+            self.harv(tact.calc(self.rate(), self.cost(), self.prin()));
+            Some((self.time.clone(), self.prin.clone()))
+        }))
+    }
+    pub fn harv(&mut self, wait: Float) {
         self.time += &wait;
         self.prin += wait * self.rate() * self.prin() - self.cost();
     }
