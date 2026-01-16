@@ -1,0 +1,9 @@
+[package]
+name = "exponium"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+anyhow = { version = "1.0.100", default-features = false }
+crossterm = { version = "0.29.0", default-features = false, features = ["events"] }
+rug = { version = "1.28.0", default-features = false, features = ["float"] }
