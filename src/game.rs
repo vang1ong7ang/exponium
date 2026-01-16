@@ -17,7 +17,7 @@ impl Game {
         let time = Float::with_val(prec, 0);
         Game { rate, cost, prin, time }
     }
-    pub fn comp(&self, tact_x: &Tact, tact_y: &Tact, mut limit: usize) -> Option<bool> {
+    pub fn comp<const N: usize>(&self, tact_x: &Tact<N>, tact_y: &Tact<N>, mut limit: usize) -> Option<bool> {
         let mut itx = self.clone().tact(tact_x);
         let mut ity = self.clone().tact(tact_y);
         let mut tx = self.time().clone();
@@ -38,7 +38,7 @@ impl Game {
         }
         if limit == 0 { None } else { Some(ft) }
     }
-    pub fn tact(mut self, tact: &Tact) -> impl Iterator<Item = (Float, Float)> {
+    pub fn tact<const N: usize>(mut self, tact: &Tact<N>) -> impl Iterator<Item = (Float, Float)> {
         once((self.time.clone(), self.prin.clone())).chain(from_fn(move || {
             self.harv(tact.calc(self.rate(), self.cost(), self.prin()));
             Some((self.time.clone(), self.prin.clone()))

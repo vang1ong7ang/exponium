@@ -28,7 +28,6 @@ struct Args {
     #[arg(short, long, default_value_t = 1.0)]
     cost: f64,
 }
-
 fn main() -> Result<()> {
     let args = Args::parse();
     let prec = args.prec;
