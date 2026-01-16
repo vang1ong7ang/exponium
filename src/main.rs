@@ -32,7 +32,7 @@ impl Default for Exponium {
     fn default() -> Self {
         let prec = 256;
         let rate = Float::with_val(prec, 1.0);
-        let cost = Float::with_val(prec, 1.0);
+        let cost = Float::with_val(prec, 65536);
         Self { prec, rate, cost }
     }
 }
