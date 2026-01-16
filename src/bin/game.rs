@@ -1,3 +1,4 @@
+use clap::Parser;
 use crossterm::ExecutableCommand;
 use crossterm::cursor::Hide;
 use crossterm::cursor::MoveTo;
@@ -17,10 +18,22 @@ use std::io::Result;
 use std::io::Write;
 use std::io::stdout;
 use std::time::Duration;
+#[derive(Debug, Parser)]
+#[command(version, about)]
+struct Args {
+    #[arg(short, long, default_value_t = 128)]
+    prec: u32,
+    #[arg(short, long, default_value_t = 1.0)]
+    rate: f64,
+    #[arg(short, long, default_value_t = 1.0)]
+    cost: f64,
+}
+
 fn main() -> Result<()> {
-    let prec = 128;
-    let rate = Float::with_val(prec, 1.0);
-    let cost = Float::with_val(prec, 1.0);
+    let args = Args::parse();
+    let prec = args.prec;
+    let rate = Float::with_val(prec, args.rate);
+    let cost = Float::with_val(prec, args.cost);
     let mut game = Game::new(prec, rate, cost);
     enable_raw_mode()?;
     let mut out = stdout();

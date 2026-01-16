@@ -2,6 +2,7 @@ use crate::Tact;
 use rug::Float;
 use std::iter::from_fn;
 use std::iter::once;
+#[derive(Debug, Clone)]
 pub struct Game {
     rate: Float,
     cost: Float,
@@ -16,7 +17,28 @@ impl Game {
         let time = Float::with_val(prec, 0);
         Game { rate, cost, prin, time }
     }
-    pub fn tact(mut self, tact: Tact) -> impl Iterator<Item = (Float, Float)> {
+    pub fn comp(&self, tact_x: &Tact, tact_y: &Tact, mut limit: usize) -> Option<bool> {
+        let mut itx = self.clone().tact(tact_x);
+        let mut ity = self.clone().tact(tact_y);
+        let mut tx = self.time().clone();
+        let mut ty = self.time().clone();
+        let mut px = self.prin().clone();
+        let mut py = self.prin().clone();
+        let mut ft = tx < ty;
+        let mut fp = px < py;
+        while ft == fp && limit > 0 {
+            limit -= 1;
+            if ft {
+                (tx, px) = itx.next().unwrap();
+            } else {
+                (ty, py) = ity.next().unwrap();
+            }
+            ft = tx < ty;
+            fp = px < py;
+        }
+        if limit == 0 { None } else { Some(ft) }
+    }
+    pub fn tact(mut self, tact: &Tact) -> impl Iterator<Item = (Float, Float)> {
         once((self.time.clone(), self.prin.clone())).chain(from_fn(move || {
             self.harv(tact.calc(self.rate(), self.cost(), self.prin()));
             Some((self.time.clone(), self.prin.clone()))
