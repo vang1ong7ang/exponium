@@ -1,6 +1,4 @@
 use rug::Float;
-use std::iter::from_fn;
-use std::iter::once;
 #[derive(Debug, Clone)]
 pub struct Game {
     rate: Float,
