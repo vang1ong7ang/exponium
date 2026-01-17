@@ -7,7 +7,7 @@ pub struct Game {
     time: Float,
 }
 impl Game {
-    pub fn new(prec: u32, rate: &Float, cost: &Float) -> Self {
+    pub fn new(prec: u32, rate: Float, cost: Float) -> Self {
         let rate = Float::with_val(prec, rate);
         let cost = Float::with_val(prec, cost);
         let prin = Float::with_val(prec, 1);
