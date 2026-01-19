@@ -29,6 +29,8 @@ struct Args {
     cost: String,
     #[arg(long, default_value_t = 100)]
     poll: u64,
+    #[arg(long, default_value_t = 10)]
+    base: i32,
     #[arg(long)]
     save: Option<String>,
 }
@@ -36,8 +38,8 @@ struct Args {
 fn main() -> Result<()> {
     let args = Args::parse();
     let prec = args.prec;
-    let rate = Float::with_val(prec, Float::parse(args.rate)?);
-    let cost = Float::with_val(prec, Float::parse(args.cost)?);
+    let rate = Float::with_val(prec, Float::parse_radix(args.rate, args.base)?);
+    let cost = Float::with_val(prec, Float::parse_radix(args.cost, args.base)?);
     let mut game = Game::new(prec, rate, cost);
     let mut freq = Float::with_val(prec, 1.0);
     let mut step = Float::with_val(prec, 0.0);
@@ -67,7 +69,7 @@ fn main() -> Result<()> {
                             if let Some(save) = args.save {
                                 let mut file = File::create(save)?;
                                 for s in hist {
-                                    writeln!(file, "{}", s)?;
+                                    writeln!(file, "{}", s.to_string_radix(args.base, None))?;
                                 }
                             }
                             execute!(stdout(), Show, LeaveAlternateScreen)?;
@@ -83,7 +85,7 @@ fn main() -> Result<()> {
         let data = [game.time().clone(), game.gain(step.clone()) + game.prin(), step.clone(), game.gain(step.clone()), game.time().clone(), game.prin().clone(), game.rate().clone(), game.cost().clone(), freq.clone()];
         for i in 0..head.len() {
             execute!(stdout(), MoveTo(0, i as u16))?;
-            println!("{}: {}", head[i], data[i]);
+            println!("{}: {}", head[i], data[i].to_string_radix(args.base, None));
         }
         execute!(stdout(), MoveTo(0, head.len() as u16))?;
         println!("\r\n<Enter>: Harvest\r\n<Esc>: Exit\r\n<Up>: Speed +\r\n<Down>: Speed -\r\n<Left>: Reset");

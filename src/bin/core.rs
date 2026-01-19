@@ -10,7 +10,7 @@ struct Args {
     prec: u32,
     #[arg(long, default_value = "1.0")]
     rate: String,
-    #[arg(long, default_value = "65536")]
+    #[arg(long, default_value = "1.0")]
     cost: String,
     #[arg(long, default_value_t = 10)]
     base: i32,
