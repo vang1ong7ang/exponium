@@ -34,7 +34,6 @@ struct Args {
     #[arg(long)]
     save: Option<String>,
 }
-
 fn main() -> Result<()> {
     let args = Args::parse();
     let prec = args.prec;
